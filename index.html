@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Pomodoro Flow/Rest</title>
+  <title>Pomodoro Timer</title>
 
   <!-- W3.CSS -->
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 
-  <!-- iOS WebApp fullscreen -->
+  <!-- iOS WebApp fullscreen
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> //////////////////////////////////-->
 
   <style>
     body,html {height:100%;background:#0f1724;color:#fff;font-family:"Segoe UI",Roboto,sans-serif;}
@@ -25,22 +25,23 @@
 
 <div class="w3-content w3-padding" style="max-width:900px">
   <header class="w3-center w3-padding-32">
-    <h1>⏱ Pomodoro Personalizzato</h1>
-    <p>Seleziona minuti di <b>FLOW</b> e <b>REST</b>, poi premi Avvia</p>
+    <h1 hidden>Tomato Flow Timer</h1>
+    <h2 hidden>Improve workflow</h2>
+    <!--<p>Seleziona minuti di <b>FLOW</b> e <b>REST</b>, poi premi Avvia</p> ////////////////////////////////////-->
   </header>
 
   <div class="w3-row-padding">
     <!-- Colonna impostazioni -->
     <div class="w3-col m4 w3-margin-bottom">
       <div class="w3-card w3-round w3-padding w3-theme-l3">
-        <label>Flow (minuti)</label>
-        <input id="flowMinutes" class="w3-input w3-margin-bottom" type="number" min="1" value="45">
+        <label>Flow</label>
+        <input id="flowMinutes" class="w3-input w3-margin-bottom" type="number" min="1" value="52">
         
-        <label>Rest (minuti)</label>
-        <input id="restMinutes" class="w3-input w3-margin-bottom" type="number" min="1" value="15">
+        <label>Rest</label>
+        <input id="restMinutes" class="w3-input w3-margin-bottom" type="number" min="1" value="17">
 
         <button id="startStop" class="w3-button w3-block w3-theme w3-round-large w3-margin-bottom">Avvia</button>
-        <button id="reset" class="w3-button w3-block w3-light-grey w3-round-large">Reset</button>
+        <!--<button id="reset" class="w3-button w3-block w3-light-grey w3-round-large">Reset</button> //////////////////////////// -->
       </div>
     </div>
 
@@ -57,13 +58,13 @@
           </div>
           <div class="w3-half">
             <div class="value" id="totalTime">0h 0m</div>
-            <div class="label">Tempo totale</div>
+            <div class="label">Tempo totale</div>  <!--Fai in modo che stampi (es. 10 tempi totali in base al num di cicli es 2 - 5 - 10 cicli coi tempi)-->
           </div>
         </div>
 
-        <p id="currentSegment" class="w3-small w3-text-grey w3-margin-top">
-          Pronto — imposta i minuti e premi Avvia
-        </p>
+        <!--<p id="currentSegment" class="w3-small w3-text-grey w3-margin-top">
+          scopare
+        </p>///////////////////////////-->
       </div>
     </div>
   </div>
@@ -74,13 +75,13 @@
   const flowInput = document.getElementById('flowMinutes');
   const restInput = document.getElementById('restMinutes');
   const startStopBtn = document.getElementById('startStop');
-  const resetBtn = document.getElementById('reset');
+  /*const resetBtn = document.getElementById('reset'); ///////////////////////////////// */
 
   const phaseLabel = document.getElementById('phaseLabel');
   const countdownEl = document.getElementById('countdown');
   const cyclesEl = document.getElementById('cycles');
   const totalTimeEl = document.getElementById('totalTime');
-  const currentSegment = document.getElementById('currentSegment');
+  /*const currentSegment = document.getElementById('currentSegment');///////////////*/
 
   let running=false, phase='idle', remaining=0, timer=null;
   let cycles=0, totalSeconds=0, lastTick=null;
@@ -119,15 +120,15 @@
     if(newPhase==='flow'){
       phaseLabel.textContent="FLOW";
       phaseLabel.style.color="#4da6ff";
-      currentSegment.textContent=`Lavora ${minutes} min.`;
+      /*currentSegment.textContent=`Lavora ${minutes} min.`;////////////////////*/
     } else if(newPhase==='rest'){
       phaseLabel.textContent="REST";
       phaseLabel.style.color="#34d399";
-      currentSegment.textContent=`Pausa ${minutes} min.`;
+      /*currentSegment.textContent=`Pausa ${minutes} min.`;///////////////////////*/
     } else {
       phaseLabel.textContent="IDLE";
       phaseLabel.style.color="#fff";
-      currentSegment.textContent="Fermato. Imposta e premi Avvia.";
+      /*currentSegment.textContent="Fermato. Imposta e premi Avvia.";///////////////*/
     }
     countdownEl.textContent=fmt(remaining);
     if(newPhase!=='idle') beep(); // beep ogni cambio fase
@@ -174,7 +175,7 @@
   }
 
   startStopBtn.onclick=()=>{running?stop(true):start();}
-  resetBtn.onclick=()=>stop(true);
+  /*resetBtn.onclick=()=>stop(true);///////////////////////*/
 
   setPhase('idle',0); updateMeta();
 })();
