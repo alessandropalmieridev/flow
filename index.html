@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pomodoro Flow/Rest</title>
+
+  <!-- W3.CSS -->
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+
+  <!-- iOS WebApp fullscreen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <style>
+    body,html {height:100%;background:#0f1724;color:#fff;font-family:"Segoe UI",Roboto,sans-serif;}
+    .phase {font-size: 42px;font-weight: bold;letter-spacing: 2px;}
+    .timer {font-size: 64px;font-weight: bold;margin: 20px 0;}
+    .value {font-size: 22px;font-weight: bold;}
+    .label {font-size: 14px;color:#ccc;}
+  </style>
+</head>
+<body class="w3-theme-d1">
+
+<div class="w3-content w3-padding" style="max-width:900px">
+  <header class="w3-center w3-padding-32">
+    <h1>⏱ Pomodoro Personalizzato</h1>
+    <p>Seleziona minuti di <b>FLOW</b> e <b>REST</b>, poi premi Avvia</p>
+  </header>
+
+  <div class="w3-row-padding">
+    <!-- Colonna impostazioni -->
+    <div class="w3-col m4 w3-margin-bottom">
+      <div class="w3-card w3-round w3-padding w3-theme-l3">
+        <label>Flow (minuti)</label>
+        <input id="flowMinutes" class="w3-input w3-margin-bottom" type="number" min="1" value="45">
+        
+        <label>Rest (minuti)</label>
+        <input id="restMinutes" class="w3-input w3-margin-bottom" type="number" min="1" value="15">
+
+        <button id="startStop" class="w3-button w3-block w3-theme w3-round-large w3-margin-bottom">Avvia</button>
+        <button id="reset" class="w3-button w3-block w3-light-grey w3-round-large">Reset</button>
+      </div>
+    </div>
+
+    <!-- Colonna timer -->
+    <div class="w3-col m8">
+      <div class="w3-card w3-round w3-center w3-padding-32 w3-theme-l2">
+        <div id="phaseLabel" class="phase">IDLE</div>
+        <div id="countdown" class="timer">00:00</div>
+
+        <div class="w3-row w3-margin-top">
+          <div class="w3-half">
+            <div class="value" id="cycles">0</div>
+            <div class="label">Cicli completati</div>
+          </div>
+          <div class="w3-half">
+            <div class="value" id="totalTime">0h 0m</div>
+            <div class="label">Tempo totale</div>
+          </div>
+        </div>
+
+        <p id="currentSegment" class="w3-small w3-text-grey w3-margin-top">
+          Pronto — imposta i minuti e premi Avvia
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const flowInput = document.getElementById('flowMinutes');
+  const restInput = document.getElementById('restMinutes');
+  const startStopBtn = document.getElementById('startStop');
+  const resetBtn = document.getElementById('reset');
+
+  const phaseLabel = document.getElementById('phaseLabel');
+  const countdownEl = document.getElementById('countdown');
+  const cyclesEl = document.getElementById('cycles');
+  const totalTimeEl = document.getElementById('totalTime');
+  const currentSegment = document.getElementById('currentSegment');
+
+  let running=false, phase='idle', remaining=0, timer=null;
+  let cycles=0, totalSeconds=0, lastTick=null;
+
+  // 🔊 piccolo beep
+  function beep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.value = 880;
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+      osc.stop(ctx.currentTime + 0.5);
+    } catch(e) {
+      console.log("Beep non supportato", e);
+    }
+  }
+
+  function fmt(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = Math.floor(s%60).toString().padStart(2,'0');
+    return `${m}:${sec}`;
+  }
+  function fmtTotal(s){
+    const h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
+    return `${h}h ${m}m`;
+  }
+
+  function setPhase(newPhase, minutes){
+    phase=newPhase;
+    remaining=minutes*60;
+    if(newPhase==='flow'){
+      phaseLabel.textContent="FLOW";
+      phaseLabel.style.color="#4da6ff";
+      currentSegment.textContent=`Lavora ${minutes} min.`;
+    } else if(newPhase==='rest'){
+      phaseLabel.textContent="REST";
+      phaseLabel.style.color="#34d399";
+      currentSegment.textContent=`Pausa ${minutes} min.`;
+    } else {
+      phaseLabel.textContent="IDLE";
+      phaseLabel.style.color="#fff";
+      currentSegment.textContent="Fermato. Imposta e premi Avvia.";
+    }
+    countdownEl.textContent=fmt(remaining);
+    if(newPhase!=='idle') beep(); // beep ogni cambio fase
+  }
+
+  function updateMeta(){
+    cyclesEl.textContent=cycles;
+    totalTimeEl.textContent=fmtTotal(totalSeconds);
+  }
+
+  function tick(){
+    const now=Date.now();
+    if(lastTick===null) lastTick=now;
+    const delta=(now-lastTick)/1000;
+    lastTick=now;
+    remaining-=delta;
+    if(remaining<0) remaining=0;
+    totalSeconds+=delta;
+    countdownEl.textContent=fmt(remaining);
+    updateMeta();
+    if(remaining<=0){
+      if(phase==='flow') setPhase('rest', parseInt(restInput.value)||15);
+      else if(phase==='rest'){cycles++; setPhase('flow', parseInt(flowInput.value)||45);}
+    }
+  }
+
+  function start(){
+    setPhase('flow', parseInt(flowInput.value)||45);
+    running=true;
+    cycles=0; totalSeconds=0; lastTick=null;
+    timer=setInterval(tick,200);
+    startStopBtn.textContent="Stop";
+    startStopBtn.classList.remove("w3-theme");
+    startStopBtn.classList.add("w3-red");
+    flowInput.disabled=restInput.disabled=true;
+  }
+  function stop(reset=true){
+    clearInterval(timer);timer=null;running=false;
+    startStopBtn.textContent="Avvia";
+    startStopBtn.classList.remove("w3-red");
+    startStopBtn.classList.add("w3-theme");
+    flowInput.disabled=restInput.disabled=false;
+    if(reset){cycles=0;totalSeconds=0;setPhase('idle',0);updateMeta();}
+  }
+
+  startStopBtn.onclick=()=>{running?stop(true):start();}
+  resetBtn.onclick=()=>stop(true);
+
+  setPhase('idle',0); updateMeta();
+})();
+</script>
+</body>
+</html>
