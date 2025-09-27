@@ -21,7 +21,7 @@
         color: #f5f5f7;
       }
 
-      #startStop {
+      /*#startStop {
         border: none;
         border-radius: 50%;
         width: 80px;
@@ -42,6 +42,17 @@
       #startStop:active {
         background-color: #007aff;
         box-shadow: 0 0 0 6px rgba(0, 122, 255, 0.3);
+      }*/
+
+      #startStop,
+      #startStop:hover,
+      #startStop:focus,
+      #startStop:active {
+        background: inherit !important;
+        color: inherit !important;
+        box-shadow: none !important;
+        outline: none !important;
+        cursor: default !important;
       }
 
       #countdown {
@@ -111,11 +122,38 @@
 
       <!-- Timer -->
       <div class="w3-display-middle w3-center">
-        <button id="startStop">
+        <button class="w3-button w3-round-xlarge w3-xxlarge" id="startStop">
           <i class="fa fa-play" id="buttonIcon"></i>
         </button>
         <div id="countdown">00:00</div>
         <div id="phaseLabel" class="phase-idle">IDLE</div>
+        <!-- Validaton script -->
+        <script>
+          let startButtonAppearence = document.getElementById("startStop");
+          const flowInput = document.getElementById("flowMinutes");
+          const restInput = document.getElementById("restMinutes");
+          function validateInputs() {
+            //a cooler way to write the function function -- const isValid = v => v !== null && v !== undefined && v !== "" && !isNaN(v) && Number.isInteger(Number(v)) && v >= 1;
+            function isValid(v) {
+              return (
+                v !== null &&
+                v !== undefined &&
+                v !== "" &&
+                !isNaN(v) &&
+                Number.isInteger(Number(v)) &&
+                v >= 1
+              );
+            }
+            if (!isValid(flowInput.value) || !isValid(restInput.value)) {
+              startButtonAppearence.disabled = true;
+            } else {
+              startButtonAppearence.disabled = false;
+            }
+          }
+          flowInput.addEventListener("input", validateInputs);
+          restInput.addEventListener("input", validateInputs);
+          validateInputs();
+        </script>
       </div>
 
       <!-- Stats -->
@@ -132,8 +170,8 @@
     </div>
 
     <script>
-      const flowInput = document.getElementById("flowMinutes");
-      const restInput = document.getElementById("restMinutes");
+      // const flowInput = document.getElementById("flowMinutes");
+      // const restInput = document.getElementById("restMinutes");
       const startStopBtn = document.getElementById("startStop");
       const buttonIcon = document.getElementById("buttonIcon");
 
