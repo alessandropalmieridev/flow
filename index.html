@@ -8,18 +8,57 @@
 
   <!-- W3.CSS -->
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
   
   <!-- Fonts and Styles -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    
+    /* Colors */
+    /* #007aff - blue flow */
+    /* #ff3b30 - red rest */
+    /* #1c1c1e - backgound */
+    /* #f5f5f7 - font principal color */
+    /* #6e6e73 - font label color */
+
+    /* Font */
+    /* 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif */
+
+
+
+
     body,html {
       height: 100%; 
-      font-family:"Segoe UI",Roboto,sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #1c1c1e;
     }
 
     * {
-      color: #d3d3d3 !important
+      color: #f5f5f7;
+    }
+
+    #startStop,
+    #startStop:hover,
+    #startStop:focus,
+    #startStop:active {
+      background: inherit !important;
+      color: inherit !important;
+      box-shadow: none !important;
+      outline: none !important;
+      cursor: default !important;
+    }
+
+    #flowMinutes,
+    #restMinutes {
+      background-color: transparent !important;
+      color: #f5f5f7 !important;
+      border-bottom: 1px solid #6e6e73 !important;
+    }
+
+    #flowMinutes:focus,
+    #restMinutes:focus {
+      outline: none !important;
+      border-color: #007aff !important;
+      
     }
 
     .phase {
@@ -41,10 +80,11 @@
 
     .label {
       font-size: 14px;
+      color: #6e6e73 !important;
     }
   </style>
 </head>
-<body class="w3-theme-d1">
+<body>
 
   <div class="w3-display-container w3-margin" style="height:100vh;">
 
@@ -58,11 +98,11 @@
 
       <div class="w3-container" >
 
-        <label>Flow</label>
-        <input class="w3-input" id="flowMinutes" type="number" min="1" value="52">
+        <label class="label">Flow</label>
+        <input class="w3-input " id="flowMinutes" type="number" min="1" value="52" style="max-width:50%;">
       
-        <label>Rest</label>
-        <input class="w3-input" id="restMinutes" type="number" min="1" value="17">
+        <label class="label">Rest</label>
+        <input class="w3-input" id="restMinutes" type="number" min="1" value="17" style="max-width:50%;">
 
       </div>
 
@@ -71,7 +111,7 @@
     <!-- Timer column -->
     <div class="w3-display-middle w3-center">
       <div>
-        <button class="fa fa-play w3-button w3-round-xlarge w3-xxlarge" id="startStop"></button>
+        <button class="w3-button w3-round-xlarge w3-xxlarge" id="startStop"><i class="fa fa-play" id="buttonIcon"></i></button>
         <!-- Validaton script -->
         <script>
           let startButtonAppearence = document.getElementById("startStop");
@@ -119,6 +159,7 @@
     const flowInput = document.getElementById('flowMinutes');
     const restInput = document.getElementById('restMinutes');
     const startStopBtn = document.getElementById('startStop');
+    const buttonIcon = document.getElementById('buttonIcon');
 
     const phaseLabel = document.getElementById('phaseLabel');
     const countdownEl = document.getElementById('countdown');
@@ -161,13 +202,13 @@
       remaining=minutes*60;
       if(newPhase==='flow'){
         phaseLabel.textContent="FLOW";
-        phaseLabel.style.color="#4da6ff";
+        phaseLabel.style.color="#007aff";
       } else if(newPhase==='rest'){
         phaseLabel.textContent="REST";
-        phaseLabel.style.color="#34d399";
+        phaseLabel.style.color="#ff3b30";
       } else {
         phaseLabel.textContent="IDLE";
-        phaseLabel.style.color="#fff";
+        phaseLabel.style.color="#f5f5f7";
       }
       countdownEl.textContent=fmt(remaining);
       beep(); // beep every phase change
@@ -199,14 +240,14 @@
       running=true;
       cycles=0; totalSeconds=0; lastTick=null;
       timer=setInterval(tick,200);
-      startStopBtn.textContent="Stop";
+      buttonIcon.setAttribute("class", "fa fa-stop");
       startStopBtn.classList.remove("w3-theme");
       startStopBtn.classList.add("w3-red");
       flowInput.disabled=restInput.disabled=true;
     }
     function stop(reset=true){
       clearInterval(timer);timer=null;running=false;
-      startStopBtn.textContent="Avvia";
+      buttonIcon.setAttribute("class", "fa fa-play");
       startStopBtn.classList.remove("w3-red");
       startStopBtn.classList.add("w3-theme");
       flowInput.disabled=restInput.disabled=false;
