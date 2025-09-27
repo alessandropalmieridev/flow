@@ -1,43 +1,77 @@
+<!--
+  Pomodoro Timer
+  Author: Your Name
+  Description: Simple Pomodoro timer with flow/rest settings, cycles counter, and total time worked.
+-->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Pomodoro Timer</title>
+
+    <!-- W3.CSS framework for layout -->
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../icon.svg" />
+
+    <!-- Font Awesome for icons -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
+
+    <!-- Google Fonts: Inter -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+
     <style>
+      /* =========================
+         Color Palette
+         =========================
+         -- Primary flow color: #007aff (blue)
+         -- Rest color: #ff3b30 (red)
+         -- Background: #1c1c1e (dark)
+         -- Primary font color: #f5f5f7 (off-white)
+         -- Input/label color: #6e6e73 (gray)
+         -- Button highlight: #ff9500 (orange)
+      ========================= */
+
       body {
         font-family: "Inter", sans-serif;
-        background-color: #1c1c1e;
-        color: #f5f5f7;
+        background-color: #1c1c1e; /* Dark background */
+        color: #f5f5f7; /* Default font color */
       }
 
+      /* =========================
+         Start/Stop Button
+         ========================= */
       #startStop,
       #startStop:hover,
       #startStop:focus,
       #startStop:active {
-        background-color: inherit !important;
-        border: 4px solid #ff9500;
-        border-radius: 100%;
+        background-color: inherit !important; /* Keep background same */
+        border: 4px solid #ff9500; /* Orange border */
+        border-radius: 100%; /* Circular button */
         width: 80px;
         height: 80px;
-        box-shadow: none !important;
+        box-shadow: none !important; /* Remove shadow */
         outline: none !important;
         cursor: pointer !important;
       }
+
+      /* Icon color */
       #startStop i {
         color: #ff9500 !important;
       }
 
+      /* =========================
+         Countdown and Phase Label
+         ========================= */
       #countdown {
         font-size: 64px;
         font-weight: 700;
@@ -51,6 +85,7 @@
         transition: color 0.2s ease;
       }
 
+      /* Phase colors */
       .phase-flow {
         color: #007aff;
       }
@@ -61,6 +96,9 @@
         color: #f5f5f7;
       }
 
+      /* =========================
+         Input Fields
+         ========================= */
       input[type="number"] {
         background: transparent;
         color: #f5f5f7;
@@ -72,14 +110,38 @@
 
       input[type="number"]:focus {
         outline: none;
-        border-color: #007aff;
-        box-shadow: 0 2px 0 0 #007aff33;
+        border-color: #007aff; /* Highlight on focus */
+        box-shadow: 0 2px 0 0 #007aff33; /* Subtle focus effect */
+      }
+
+      /* =========================
+         Responsive adjustments
+         ========================= */
+      @media (max-width: 768px) {
+        #startStop {
+          width: 60px;
+          height: 60px;
+        }
+
+        #countdown {
+          font-size: 48px;
+        }
+
+        #phaseLabel {
+          font-size: 32px;
+        }
+
+        input[type="number"] {
+          width: 80%;
+        }
       }
     </style>
   </head>
   <body>
     <div class="w3-display-container w3-margin" style="height: 100vh">
-      <!-- Settings -->
+      <!-- =========================
+           Settings Panel
+           ========================= -->
       <div class="w3-display-left">
         <div>
           <label for="flowMinutes">Flow</label><br />
@@ -103,7 +165,9 @@
         </div>
       </div>
 
-      <!-- Timer -->
+      <!-- =========================
+           Timer Display
+           ========================= -->
       <div class="w3-display-middle w3-center">
         <div>
           <button class="w3-button w3-xxlarge" id="startStop">
@@ -113,13 +177,16 @@
         <div><label id="countdown">00:00</label></div>
         <div><label id="phaseLabel" class="phase-idle">IDLE</label></div>
 
-        <!-- Validaton script -->
+        <!-- =========================
+             Input Validation Script
+             ========================= -->
         <script>
           let startButtonAppearence = document.getElementById("startStop");
           const flowInput = document.getElementById("flowMinutes");
           const restInput = document.getElementById("restMinutes");
+
+          // Validate inputs to ensure positive integers
           function validateInputs() {
-            //a cooler way to write the function function -- const isValid = v => v !== null && v !== undefined && v !== "" && !isNaN(v) && Number.isInteger(Number(v)) && v >= 1;
             function isValid(v) {
               return (
                 v !== null &&
@@ -136,13 +203,16 @@
               startButtonAppearence.disabled = false;
             }
           }
+
           flowInput.addEventListener("input", validateInputs);
           restInput.addEventListener("input", validateInputs);
           validateInputs();
         </script>
       </div>
 
-      <!-- Stats -->
+      <!-- =========================
+           Stats Panel
+           ========================= -->
       <div class="w3-display-right w3-center">
         <div>
           <div class="w3-xlarge" id="cycles">0</div>
@@ -155,6 +225,9 @@
       </div>
     </div>
 
+    <!-- =========================
+         Timer Logic Script
+         ========================= -->
     <script>
       const startStopBtn = document.getElementById("startStop");
       const buttonIcon = document.getElementById("buttonIcon");
@@ -172,6 +245,7 @@
         totalSeconds = 0,
         lastTick = null;
 
+      // Simple beep sound on phase change
       function beep() {
         try {
           const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -185,10 +259,11 @@
           gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
           osc.stop(ctx.currentTime + 0.5);
         } catch (e) {
-          console.log("Beep non supportato", e);
+          console.log("Beep not supported", e);
         }
       }
 
+      // Format seconds to mm:ss
       function fmt(s) {
         const m = Math.floor(s / 60)
           .toString()
@@ -199,12 +274,14 @@
         return `${m}:${sec}`;
       }
 
+      // Format total seconds to hours + minutes
       function fmtTotal(s) {
         const h = Math.floor(s / 3600),
           m = Math.floor((s % 3600) / 60);
         return `${h}h ${m}m`;
       }
 
+      // Set current phase (flow/rest/idle)
       function setPhase(newPhase, minutes) {
         phase = newPhase;
         remaining = minutes * 60;
@@ -219,11 +296,13 @@
         beep();
       }
 
+      // Update stats
       function updateMeta() {
         cyclesEl.textContent = cycles;
         totalTimeEl.textContent = fmtTotal(totalSeconds);
       }
 
+      // Timer tick
       function tick() {
         const now = Date.now();
         if (!lastTick) lastTick = now;
@@ -245,6 +324,7 @@
         }
       }
 
+      // Start timer
       function start() {
         setPhase("flow", parseInt(flowInput.value) || 45);
         running = true;
@@ -256,6 +336,7 @@
         flowInput.disabled = restInput.disabled = true;
       }
 
+      // Stop timer
       function stop(reset = true) {
         clearInterval(timer);
         timer = null;
