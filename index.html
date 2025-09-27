@@ -1,262 +1,344 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/svg+xml" href="../icon.svg">
-  <title>Pomodoro Timer</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="../icon.svg" />
+    <title>Pomodoro Timer</title>
 
-  <!-- W3.CSS -->
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  
-  <!-- Fonts and Styles -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    
-    /* Colors */
-    /* #007aff - blue flow */
-    /* #ff3b30 - red rest */
-    /* #1c1c1e - backgound */
-    /* #f5f5f7 - font principal color */
-    /* #6e6e73 - font label color */
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-    /* Font */
-    /* 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif */
+    <style>
+      /* ------------------------ */
+      /* Base e Font               */
+      /* ------------------------ */
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background-color: #1c1c1e;
+        color: #f5f5f7;
+      }
 
+      /* ------------------------ */
+      /* Layout                   */
+      /* ------------------------ */
+      .container {
+        display: flex;
+        height: 100vh;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+      }
 
+      .column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
 
+      .center-column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
 
-    body,html {
-      height: 100%; 
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #1c1c1e;
-    }
+      /* ------------------------ */
+      /* Inputs                   */
+      /* ------------------------ */
+      label {
+        font-weight: 600;
+        color: #6e6e73;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
 
-    * {
-      color: #f5f5f7;
-    }
+      input[type="number"] {
+        background: transparent;
+        color: #f5f5f7;
+        border: none;
+        border-bottom: 1px solid #6e6e73;
+        padding: 6px 4px;
+        font-size: 18px;
+        width: 60px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
 
-    #startStop,
-    #startStop:hover,
-    #startStop:focus,
-    #startStop:active {
-      background: inherit !important;
-      color: inherit !important;
-      box-shadow: none !important;
-      outline: none !important;
-      cursor: default !important;
-    }
+      input[type="number"]:focus {
+        outline: none;
+        border-color: #007aff;
+        box-shadow: 0 2px 0 0 #007aff33;
+      }
 
-    #flowMinutes,
-    #restMinutes {
-      background-color: transparent !important;
-      color: #f5f5f7 !important;
-      border-bottom: 1px solid #6e6e73 !important;
-    }
+      /* ------------------------ */
+      /* Pulsante Play/Stop       */
+      /* ------------------------ */
+      #startStop {
+        background-color: #007aff;
+        border: none;
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: box-shadow 0.2s ease, background-color 0.2s ease;
+      }
 
-    #flowMinutes:focus,
-    #restMinutes:focus {
-      outline: none !important;
-      border-color: #007aff !important;
-      
-    }
+      #startStop i {
+        color: #f5f5f7;
+        font-size: 32px;
+      }
 
-    .phase {
-      font-size: 42px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
+      #startStop:focus {
+        outline: none;
+        box-shadow: 0 0 0 6px rgba(0, 122, 255, 0.3);
+      }
 
-    .timer {
-      font-size: 64px;
-      font-weight: bold;
-      margin: 20px 0;
-    }
+      #startStop:hover,
+      #startStop:active {
+        background-color: #007aff;
+        box-shadow: 0 0 0 6px rgba(0, 122, 255, 0.3);
+      }
 
-    .value {
-      font-size: 22px;
-      font-weight: bold;
-    }
+      /* ------------------------ */
+      /* Timer e Fase             */
+      /* ------------------------ */
+      #countdown {
+        font-size: 64px;
+        font-weight: 700;
+        transition: color 0.3s ease;
+      }
 
-    .label {
-      font-size: 14px;
-      color: #6e6e73 !important;
-    }
-  </style>
-</head>
-<body>
+      #phaseLabel {
+        font-size: 42px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        transition: color 0.3s ease;
+      }
 
-  <div class="w3-display-container w3-margin" style="height:100vh;">
+      .phase-flow {
+        color: #007aff;
+      }
+      .phase-rest {
+        color: #ff3b30;
+      }
+      .phase-idle {
+        color: #f5f5f7;
+      }
 
-    <header>
-      <h1 hidden>Pomodoro Timer</h1>
-      <h2 hidden>Improve workflow</h2>
-    </header>
+      /* ------------------------ */
+      /* Stats (Cicli / Tempo)    */
+      /* ------------------------ */
+      .value {
+        font-size: 22px;
+        font-weight: 600;
+        text-align: center;
+      }
 
+      .label {
+        font-size: 14px;
+        color: #6e6e73;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
       <!-- Setting column -->
-    <div class="w3-display-topleft" >
-
-      <div class="w3-container" >
-
-        <label class="label">Flow</label>
-        <input class="w3-input " id="flowMinutes" type="number" min="1" value="52" style="max-width:50%;">
-      
-        <label class="label">Rest</label>
-        <input class="w3-input" id="restMinutes" type="number" min="1" value="17" style="max-width:50%;">
-
+      <div class="column">
+        <div>
+          <label for="flowMinutes">Flow</label>
+          <input id="flowMinutes" type="number" min="1" value="52" />
+        </div>
+        <div>
+          <label for="restMinutes">Rest</label>
+          <input id="restMinutes" type="number" min="1" value="17" />
+        </div>
       </div>
 
+      <!-- Timer column -->
+      <div class="center-column">
+        <button id="startStop">
+          <i class="fa fa-play" id="buttonIcon"></i>
+        </button>
+        <div id="countdown">00:00</div>
+        <div id="phaseLabel" class="phase-idle">IDLE</div>
+      </div>
+
+      <!-- Stats column -->
+      <div class="column">
+        <div>
+          <div class="value" id="cycles">0</div>
+          <div class="label">Cicli completati</div>
+        </div>
+        <div>
+          <div class="value" id="totalTime">0h 0m</div>
+          <div class="label">Tempo totale</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Timer column -->
-    <div class="w3-display-middle w3-center">
-      <div>
-        <button class="w3-button w3-round-xlarge w3-xxlarge" id="startStop"><i class="fa fa-play" id="buttonIcon"></i></button>
-        <!-- Validaton script -->
-        <script>
-          let startButtonAppearence = document.getElementById("startStop");
-          const flowInput = document.getElementById('flowMinutes');
-          const restInput = document.getElementById('restMinutes');
+    <script>
+      const flowInput = document.getElementById("flowMinutes");
+      const restInput = document.getElementById("restMinutes");
+      const startStopBtn = document.getElementById("startStop");
+      const buttonIcon = document.getElementById("buttonIcon");
 
-          function validateInputs() {
-            //a cooler way to write the function function -- const isValid = v => v !== null && v !== undefined && v !== "" && !isNaN(v) && Number.isInteger(Number(v)) && v >= 1;
-            function isValid(v) {
-              return v !== null && v !== undefined && v !== "" && !isNaN(v) && Number.isInteger(Number(v)) && v >= 1;
-            }
-            if (!isValid(flowInput.value) || !isValid(restInput.value)) {
-              startButtonAppearence.disabled = true;
-            } else {
-              startButtonAppearence.disabled = false;
-            }
+      const phaseLabel = document.getElementById("phaseLabel");
+      const countdownEl = document.getElementById("countdown");
+      const cyclesEl = document.getElementById("cycles");
+      const totalTimeEl = document.getElementById("totalTime");
+
+      let running = false,
+        phase = "idle",
+        remaining = 0,
+        timer = null;
+      let cycles = 0,
+        totalSeconds = 0,
+        lastTick = null;
+
+      function beep() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = "sine";
+          osc.frequency.value = 880;
+          osc.start();
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+          osc.stop(ctx.currentTime + 0.5);
+        } catch (e) {
+          console.log("Beep non supportato", e);
+        }
+      }
+
+      function fmt(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, "0");
+        const sec = Math.floor(s % 60)
+          .toString()
+          .padStart(2, "0");
+        return `${m}:${sec}`;
+      }
+
+      function fmtTotal(s) {
+        const h = Math.floor(s / 3600),
+          m = Math.floor((s % 3600) / 60);
+        return `${h}h ${m}m`;
+      }
+
+      function setPhase(newPhase, minutes) {
+        phase = newPhase;
+        remaining = minutes * 60;
+        if (newPhase === "flow") {
+          phaseLabel.textContent = "FLOW";
+          phaseLabel.className = "phase-flow";
+        } else if (newPhase === "rest") {
+          phaseLabel.textContent = "REST";
+          phaseLabel.className = "phase-rest";
+        } else {
+          phaseLabel.textContent = "IDLE";
+          phaseLabel.className = "phase-idle";
+        }
+        countdownEl.textContent = fmt(remaining);
+        beep();
+      }
+
+      function updateMeta() {
+        cyclesEl.textContent = cycles;
+        totalTimeEl.textContent = fmtTotal(totalSeconds);
+      }
+
+      function tick() {
+        const now = Date.now();
+        if (lastTick === null) lastTick = now;
+        const delta = (now - lastTick) / 1000;
+        lastTick = now;
+        remaining -= delta;
+        if (remaining < 0) remaining = 0;
+        totalSeconds += delta;
+        countdownEl.textContent = fmt(remaining);
+        updateMeta();
+
+        if (remaining <= 0) {
+          if (phase === "flow")
+            setPhase("rest", parseInt(restInput.value) || 15);
+          else if (phase === "rest") {
+            cycles++;
+            setPhase("flow", parseInt(flowInput.value) || 45);
           }
-          flowInput.addEventListener('input', validateInputs);
-          restInput.addEventListener('input', validateInputs);
-          validateInputs();
-        </script>
-      </div>
-      <div id="countdown" class="timer">00:00</div>
-      <div id="phaseLabel" class="phase">IDLE</div>
-    </div>
-
-    <!-- Stats column -->
-    <div class="w3-display-topright w3-center">
-
-      <div>
-        <div class="value" id="cycles">0</div>
-        <div class="label">Cicli completati</div>
-      </div>
-      <div >
-        <div class="value" id="totalTime">0h 0m</div>
-        <div class="label">Tempo totale</div>  <!--Fai in modo che stampi (es. 10 tempi totali in base al num di cicli es 2 - 5 - 10 cicli coi tempi)-->
-      </div>
-
-    </div>
-
-  </div>
-
-  <script>
-  (function(){
-    const flowInput = document.getElementById('flowMinutes');
-    const restInput = document.getElementById('restMinutes');
-    const startStopBtn = document.getElementById('startStop');
-    const buttonIcon = document.getElementById('buttonIcon');
-
-    const phaseLabel = document.getElementById('phaseLabel');
-    const countdownEl = document.getElementById('countdown');
-    const cyclesEl = document.getElementById('cycles');
-    const totalTimeEl = document.getElementById('totalTime');
-
-    let running=false, phase='idle', remaining=0, timer=null;
-    let cycles=0, totalSeconds=0, lastTick=null;
-
-    // beep
-    function beep() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.type = "sine";
-        osc.frequency.value = 880;
-        osc.start();
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
-        osc.stop(ctx.currentTime + 0.5);
-      } catch(e) {
-        console.log("Beep non supportato", e);
+        }
       }
-    }
 
-    function fmt(s){
-      const m = Math.floor(s/60).toString().padStart(2,'0');
-      const sec = Math.floor(s%60).toString().padStart(2,'0');
-      return `${m}:${sec}`;
-    }
-    function fmtTotal(s){
-      const h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
-      return `${h}h ${m}m`;
-    }
-
-    function setPhase(newPhase, minutes){
-      phase=newPhase;
-      remaining=minutes*60;
-      if(newPhase==='flow'){
-        phaseLabel.textContent="FLOW";
-        phaseLabel.style.color="#007aff";
-      } else if(newPhase==='rest'){
-        phaseLabel.textContent="REST";
-        phaseLabel.style.color="#ff3b30";
-      } else {
-        phaseLabel.textContent="IDLE";
-        phaseLabel.style.color="#f5f5f7";
+      function start() {
+        setPhase("flow", parseInt(flowInput.value) || 45);
+        running = true;
+        cycles = 0;
+        totalSeconds = 0;
+        lastTick = null;
+        timer = setInterval(tick, 200);
+        buttonIcon.className = "fa fa-stop";
+        flowInput.disabled = restInput.disabled = true;
       }
-      countdownEl.textContent=fmt(remaining);
-      beep(); // beep every phase change
-    }
 
-    function updateMeta(){
-      cyclesEl.textContent=cycles;
-      totalTimeEl.textContent=fmtTotal(totalSeconds);
-    }
+      function stop(reset = true) {
+        clearInterval(timer);
+        timer = null;
+        running = false;
+        buttonIcon.className = "fa fa-play";
+        flowInput.disabled = restInput.disabled = false;
+        if (reset) {
+          cycles = 0;
+          totalSeconds = 0;
+          setPhase("idle", 0);
+          updateMeta();
+        }
+      }
 
-    function tick(){
-      const now=Date.now();
-      if(lastTick===null) lastTick=now;
-      const delta=(now-lastTick)/1000;
-      lastTick=now;
-      remaining-=delta;
-      if(remaining<0) remaining=0;
-      totalSeconds+=delta;
-      countdownEl.textContent=fmt(remaining);
+      startStopBtn.onclick = () => {
+        running ? stop(true) : start();
+      };
+
+      function validateInputs() {
+        function isValid(v) {
+          return (
+            v !== null &&
+            v !== undefined &&
+            v !== "" &&
+            !isNaN(v) &&
+            Number.isInteger(Number(v)) &&
+            v >= 1
+          );
+        }
+        startStopBtn.disabled =
+          !isValid(flowInput.value) || !isValid(restInput.value);
+      }
+
+      flowInput.addEventListener("input", validateInputs);
+      restInput.addEventListener("input", validateInputs);
+      validateInputs();
+
+      setPhase("idle", 0);
       updateMeta();
-      if(remaining<=0){
-        if(phase==='flow') setPhase('rest', parseInt(restInput.value)||15);
-        else if(phase==='rest'){cycles++; setPhase('flow', parseInt(flowInput.value)||45);}
-      }
-    }
-
-    function start(){
-      setPhase('flow', parseInt(flowInput.value)||45);
-      running=true;
-      cycles=0; totalSeconds=0; lastTick=null;
-      timer=setInterval(tick,200);
-      buttonIcon.setAttribute("class", "fa fa-stop");
-      startStopBtn.classList.remove("w3-theme");
-      startStopBtn.classList.add("w3-red");
-      flowInput.disabled=restInput.disabled=true;
-    }
-    function stop(reset=true){
-      clearInterval(timer);timer=null;running=false;
-      buttonIcon.setAttribute("class", "fa fa-play");
-      startStopBtn.classList.remove("w3-red");
-      startStopBtn.classList.add("w3-theme");
-      flowInput.disabled=restInput.disabled=false;
-      if(reset){cycles=0;totalSeconds=0;setPhase('idle',0);updateMeta();}
-    }
-
-    startStopBtn.onclick=()=>{running?stop(true):start();}
-    setPhase('idle',0); updateMeta();
-  })();
-  </script>
-</body>
+    </script>
+  </body>
 </html>
